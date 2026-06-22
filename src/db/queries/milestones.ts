@@ -1,0 +1,45 @@
+import { asc, eq } from 'drizzle-orm';
+
+import { nowISO } from '@/lib/date';
+import { newId } from '@/lib/id';
+import type { MilestoneFormValues } from '@/lib/validations';
+
+import { db } from '../client';
+import { milestones, type Milestone, type NewMilestone } from '../schema';
+
+export async function listMilestonesBySkill(skillId: string): Promise<Milestone[]> {
+  return db
+    .select()
+    .from(milestones)
+    .where(eq(milestones.skillId, skillId))
+    .orderBy(asc(milestones.createdAt));
+}
+
+export async function createMilestone(values: MilestoneFormValues): Promise<Milestone> {
+  const ts = nowISO();
+  const row: NewMilestone = {
+    id: newId(),
+    isCompleted: false,
+    createdAt: ts,
+    updatedAt: ts,
+    ...values,
+  };
+  const [created] = await db.insert(milestones).values(row).returning();
+  return created;
+}
+
+export async function setMilestoneCompleted(
+  id: string,
+  isCompleted: boolean
+): Promise<Milestone | undefined> {
+  const [updated] = await db
+    .update(milestones)
+    .set({ isCompleted, updatedAt: nowISO() })
+    .where(eq(milestones.id, id))
+    .returning();
+  return updated;
+}
+
+export async function deleteMilestone(id: string): Promise<void> {
+  await db.delete(milestones).where(eq(milestones.id, id));
+}
