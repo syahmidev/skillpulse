@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { StatCard } from '@/components/StatCard';
 import { Button } from '@/components/ui/Button';
@@ -63,6 +63,19 @@ export default function HomeScreen() {
           </Text>
         </View>
       ) : null}
+
+      <Pressable
+        onPress={() => router.push('/ai-plan')}
+        className="flex-row items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50 p-4 active:bg-indigo-100">
+        <View className="h-10 w-10 items-center justify-center rounded-full bg-brand">
+          <Ionicons name="sparkles" size={20} color="#ffffff" />
+        </View>
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-slate-900">AI learning plan</Text>
+          <Text className="text-xs text-slate-500">Generate milestones with Gemini</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+      </Pressable>
 
       <View className="gap-3">
         <Button label="Add learning log" onPress={() => router.push('/log/create')} />

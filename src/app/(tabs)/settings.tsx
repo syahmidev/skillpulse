@@ -1,12 +1,25 @@
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const version = Constants.expoConfig?.version ?? '1.0.0';
 
   return (
     <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-5 p-5">
+      <Pressable
+        onPress={() => router.push('/ai-plan')}
+        className="flex-row items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 active:bg-slate-50">
+        <Ionicons name="sparkles-outline" size={22} color="#6366f1" />
+        <View className="flex-1">
+          <Text className="text-base font-medium text-slate-900">AI Learning Plan</Text>
+          <Text className="text-sm text-slate-500">Generate milestones with Gemini</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+      </Pressable>
+
       <View className="rounded-2xl border border-slate-100 bg-white">
         <View className="flex-row items-center gap-3 p-4">
           <Ionicons name="information-circle-outline" size={22} color="#6366f1" />

@@ -28,6 +28,20 @@ export async function createMilestone(values: MilestoneFormValues): Promise<Mile
   return created;
 }
 
+/**
+ * Bulk-insert milestones for a skill (e.g. from a generated AI plan).
+ * createdAt is staggered by index so the checklist preserves the given order.
+ */
+export async function createMilestones(skillId: string, titles: string[]): Promise<void> {
+  if (titles.length === 0) return;
+  const base = Date.now();
+  const rows: NewMilestone[] = titles.map((title, i) => {
+    const ts = new Date(base + i).toISOString();
+    return { id: newId(), skillId, title, isCompleted: false, createdAt: ts, updatedAt: ts };
+  });
+  await db.insert(milestones).values(rows);
+}
+
 export async function setMilestoneCompleted(
   id: string,
   isCompleted: boolean
