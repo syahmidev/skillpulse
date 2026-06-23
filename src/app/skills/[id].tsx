@@ -3,8 +3,10 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
 import { LearningLogCard } from '@/components/LearningLogCard';
+import { MilestoneItem } from '@/components/MilestoneItem';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import {
   CATEGORY_LABELS,
@@ -14,7 +16,10 @@ import {
   STATUS_TONES,
 } from '@/constants/options';
 import { deleteLog } from '@/db/queries/logs';
+import { deleteMilestone, setMilestoneCompleted } from '@/db/queries/milestones';
 import { deleteSkill } from '@/db/queries/skills';
+import { AddMilestone } from '@/features/milestones/AddMilestone';
+import { useMilestonesBySkillLive } from '@/features/milestones/useMilestones';
 import { useLogsBySkillLive } from '@/features/logs/useLogs';
 import { useSkillLive } from '@/features/skills/useSkills';
 import { formatHours } from '@/lib/format';
@@ -24,9 +29,12 @@ export default function SkillDetailScreen() {
   const router = useRouter();
   const { data } = useSkillLive(id);
   const { data: logs } = useLogsBySkillLive(id);
+  const { data: milestones } = useMilestonesBySkillLive(id);
   const skill = data[0];
 
   const totalMinutes = logs.reduce((sum, l) => sum + l.durationMinutes, 0);
+  const completedCount = milestones.filter((m) => m.isCompleted).length;
+  const progress = milestones.length ? completedCount / milestones.length : 0;
 
   const confirmDeleteLog = (logId: string, title: string) => {
     Alert.alert('Delete log', `Delete "${title}"?`, [
@@ -103,6 +111,43 @@ export default function SkillDetailScreen() {
               Log{logs.length === 1 ? '' : 's'}
             </Text>
           </View>
+        </View>
+
+        <View className="gap-3 rounded-2xl border border-slate-100 bg-white p-5">
+          <SectionHeader title="Milestones" />
+          {milestones.length > 0 ? (
+            <View className="gap-2">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs text-slate-500">
+                  {completedCount}/{milestones.length} completed
+                </Text>
+                <Text className="text-xs font-semibold text-brand">
+                  {Math.round(progress * 100)}%
+                </Text>
+              </View>
+              <ProgressBar progress={progress} />
+            </View>
+          ) : null}
+
+          {milestones.length === 0 ? (
+            <Text className="text-sm text-slate-500">
+              No milestones yet — break your goal into small steps.
+            </Text>
+          ) : (
+            <View className="gap-2">
+              {milestones.map((m) => (
+                <MilestoneItem
+                  key={m.id}
+                  title={m.title}
+                  isCompleted={m.isCompleted}
+                  onToggle={() => setMilestoneCompleted(m.id, !m.isCompleted)}
+                  onDelete={() => deleteMilestone(m.id)}
+                />
+              ))}
+            </View>
+          )}
+
+          <AddMilestone skillId={skill.id} />
         </View>
 
         <View className="gap-3">
