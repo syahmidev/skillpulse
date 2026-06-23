@@ -50,14 +50,19 @@ export async function generateLearningPlan(userPrompt: string): Promise<string[]
     throw new Error(`Gemini request failed (${res.status}). ${detail.slice(0, 200)}`.trim());
   }
 
-  const data = (await res.json()) as { output_text?: string };
-  if (!data.output_text) throw new Error('Gemini returned no content.');
+  const data = (await res.json()) as InteractionResponse;
+  const text = extractText(data);
+  if (!text) {
+    throw new Error(
+      `Gemini returned no content. Response: ${JSON.stringify(data).slice(0, 300)}`
+    );
+  }
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(data.output_text);
+    parsed = JSON.parse(text);
   } catch {
-    throw new Error('Could not parse the AI response.');
+    throw new Error(`Could not parse the AI response: ${text.slice(0, 200)}`);
   }
   if (!Array.isArray(parsed)) throw new Error('Unexpected AI response format.');
 
@@ -65,4 +70,33 @@ export async function generateLearningPlan(userPrompt: string): Promise<string[]
     .map((step) => String(step).trim())
     .filter((step) => step.length > 0)
     .slice(0, MAX_STEPS);
+}
+
+type Content = { type?: string; text?: string };
+type Step = { type?: string; content?: Content[] };
+type InteractionResponse = { output_text?: string; steps?: Step[] };
+
+/**
+ * The Interactions API nests output at `steps[].content[].text` (in the
+ * `model_output` step). We prefer that step, fall back to any text content,
+ * and finally to a flat `output_text` for forward-compatibility.
+ */
+function extractText(data: InteractionResponse): string | undefined {
+  const steps = data.steps ?? [];
+
+  const collect = (filterModelOutput: boolean): string =>
+    steps
+      .filter((s) => (filterModelOutput ? s.type === 'model_output' : true))
+      .flatMap((s) => s.content ?? [])
+      .map((c) => c.text ?? '')
+      .join('')
+      .trim();
+
+  const fromModelOutput = collect(true);
+  if (fromModelOutput) return fromModelOutput;
+
+  const fromAnyStep = collect(false);
+  if (fromAnyStep) return fromAnyStep;
+
+  return data.output_text?.trim() || undefined;
 }
