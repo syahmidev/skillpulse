@@ -58,3 +58,22 @@ export const MOOD_LABELS: Record<LearningMood, string> = {
   tired: 'Tired',
   confused: 'Confused',
 };
+
+// Badge tones (keys map to <Badge tone> variants).
+export type BadgeTone = 'slate' | 'indigo' | 'green' | 'amber' | 'rose' | 'sky';
+
+export const CATEGORY_TONES: Record<SkillCategory, BadgeTone> = {
+  frontend: 'sky',
+  backend: 'indigo',
+  mobile: 'green',
+  database: 'amber',
+  devops: 'rose',
+  soft_skill: 'slate',
+  other: 'slate',
+};
+
+export const STATUS_TONES: Record<SkillStatus, BadgeTone> = {
+  active: 'green',
+  paused: 'amber',
+  completed: 'indigo',
+};
