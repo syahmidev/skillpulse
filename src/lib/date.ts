@@ -53,3 +53,14 @@ export const getWeekRange = (ref: Date = new Date()): WeekRange => {
 
 export const minutesToHours = (minutes: number): number =>
   Math.round((minutes / 60) * 10) / 10;
+
+/** "Jun 23, 2026" from a YYYY-MM-DD string (parsed as a local date). */
+export const formatDisplayDate = (isoDate: string): string => {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  const date = new Date(y, (m ?? 1) - 1, d ?? 1);
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};

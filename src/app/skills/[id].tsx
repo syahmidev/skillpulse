@@ -2,8 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
+import { LearningLogCard } from '@/components/LearningLogCard';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 import {
   CATEGORY_LABELS,
   CATEGORY_TONES,
@@ -11,14 +13,27 @@ import {
   STATUS_LABELS,
   STATUS_TONES,
 } from '@/constants/options';
+import { deleteLog } from '@/db/queries/logs';
 import { deleteSkill } from '@/db/queries/skills';
+import { useLogsBySkillLive } from '@/features/logs/useLogs';
 import { useSkillLive } from '@/features/skills/useSkills';
+import { formatHours } from '@/lib/format';
 
 export default function SkillDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data } = useSkillLive(id);
+  const { data: logs } = useLogsBySkillLive(id);
   const skill = data[0];
+
+  const totalMinutes = logs.reduce((sum, l) => sum + l.durationMinutes, 0);
+
+  const confirmDeleteLog = (logId: string, title: string) => {
+    Alert.alert('Delete log', `Delete "${title}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deleteLog(logId) },
+    ]);
+  };
 
   if (!skill) {
     return (
@@ -77,10 +92,52 @@ export default function SkillDetailScreen() {
           ) : null}
         </View>
 
-        <View className="rounded-2xl border border-slate-100 bg-white p-5">
-          <Text className="text-sm text-slate-500">
-            Learning logs and milestones for this skill will appear here in the next phases.
-          </Text>
+        <View className="flex-row gap-3">
+          <View className="flex-1 rounded-2xl border border-slate-100 bg-white p-4">
+            <Text className="text-2xl font-bold text-slate-900">{formatHours(totalMinutes)}</Text>
+            <Text className="text-xs text-slate-500">Total time</Text>
+          </View>
+          <View className="flex-1 rounded-2xl border border-slate-100 bg-white p-4">
+            <Text className="text-2xl font-bold text-slate-900">{logs.length}</Text>
+            <Text className="text-xs text-slate-500">
+              Log{logs.length === 1 ? '' : 's'}
+            </Text>
+          </View>
+        </View>
+
+        <View className="gap-3">
+          <SectionHeader
+            title="Recent logs"
+            action={
+              <Button
+                label="Add log"
+                variant="ghost"
+                onPress={() =>
+                  router.push({ pathname: '/log/create', params: { skillId: skill.id } })
+                }
+              />
+            }
+          />
+          {logs.length === 0 ? (
+            <View className="rounded-2xl border border-slate-100 bg-white p-5">
+              <Text className="text-sm text-slate-500">
+                No logs yet — add your first learning session for this skill.
+              </Text>
+            </View>
+          ) : (
+            logs.map((log) => (
+              <LearningLogCard
+                key={log.id}
+                title={log.title}
+                durationMinutes={log.durationMinutes}
+                difficulty={log.difficulty}
+                mood={log.mood}
+                logDate={log.logDate}
+                notes={log.notes}
+                onDelete={() => confirmDeleteLog(log.id, log.title)}
+              />
+            ))
+          )}
         </View>
 
         <View className="gap-3">

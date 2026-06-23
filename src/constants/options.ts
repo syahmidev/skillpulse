@@ -77,3 +77,16 @@ export const STATUS_TONES: Record<SkillStatus, BadgeTone> = {
   paused: 'amber',
   completed: 'indigo',
 };
+
+export const DIFFICULTY_TONES: Record<LogDifficulty, BadgeTone> = {
+  easy: 'green',
+  medium: 'amber',
+  hard: 'rose',
+};
+
+export const MOOD_TONES: Record<LearningMood, BadgeTone> = {
+  productive: 'green',
+  neutral: 'slate',
+  tired: 'amber',
+  confused: 'rose',
+};
