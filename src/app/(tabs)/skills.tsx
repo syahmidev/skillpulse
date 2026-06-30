@@ -27,7 +27,7 @@ export default function SkillsScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="max-h-14 grow-0"
+        className="grow-0"
         contentContainerClassName="gap-2 px-5 py-3">
         {FILTERS.map((f) => {
           const selected = f.value === filter;

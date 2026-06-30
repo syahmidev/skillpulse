@@ -43,7 +43,7 @@ export default function LogScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="max-h-16 grow-0"
+          className="grow-0"
           contentContainerClassName="gap-2 px-5 py-3">
           {[{ id: 'all', name: 'All' }, ...skills].map((s) => {
             const selected = s.id === skillFilter;
