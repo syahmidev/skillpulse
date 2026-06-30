@@ -39,6 +39,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: '#f8fafc' },
           headerTitleStyle: { color: '#0f172a', fontWeight: '700' },
           headerTintColor: '#6366f1',
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: '#f8fafc' },
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
