@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { ReminderSettings } from '@/features/reminders/ReminderSettings';
 import { useThemeStore, type ThemePreference } from '@/stores/useThemeStore';
 import { useTheme } from '@/theme/useTheme';
 
@@ -51,6 +52,8 @@ export default function SettingsScreen() {
           })}
         </View>
       </View>
+
+      <ReminderSettings />
 
       <Pressable
         onPress={() => router.push('/ai-plan')}

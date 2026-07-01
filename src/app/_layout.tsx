@@ -8,7 +8,9 @@ import '../global.css';
 
 import { db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
-// Instantiate the theme store early so the persisted preference rehydrates on launch.
+// Instantiate persisted stores early so they rehydrate on launch (theme is
+// applied, the daily reminder is re-armed).
+import { useReminderStore } from '@/stores/useReminderStore';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { useScheme, useTheme } from '@/theme/useTheme';
 
@@ -17,6 +19,7 @@ export default function RootLayout() {
   const theme = useTheme();
   const scheme = useScheme();
   useThemeStore((s) => s.preference);
+  useReminderStore((s) => s.enabled);
 
   if (error) {
     return (
