@@ -1,17 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { SelectField } from '@/components/ui/SelectField';
 import { TextField } from '@/components/ui/TextField';
+import { useToast } from '@/components/ui/Toast';
 import { createMilestones } from '@/db/queries/milestones';
 import { useSkillsLive } from '@/features/skills/useSkills';
 import { generateLearningPlan } from '@/lib/ai';
+import { reportError } from '@/lib/reportError';
 
 export default function AiPlanScreen() {
   const router = useRouter();
+  const toast = useToast();
   const { data: skills } = useSkillsLive();
 
   const [prompt, setPrompt] = useState('');
@@ -40,6 +43,7 @@ export default function AiPlanScreen() {
         setSkillId((current) => current ?? skills[0]?.id);
       }
     } catch (e) {
+      reportError(e, 'generateLearningPlan');
       setError(e instanceof Error ? e.message : 'Something went wrong.');
     } finally {
       setLoading(false);
@@ -51,10 +55,8 @@ export default function AiPlanScreen() {
     setSaving(true);
     await createMilestones(skillId, steps);
     setSaving(false);
-    const skillName = skills.find((s) => s.id === skillId)?.name ?? 'skill';
-    Alert.alert('Saved', `${steps.length} milestones added to ${skillName}.`, [
-      { text: 'OK', onPress: () => router.replace(`/skills/${skillId}`) },
-    ]);
+    toast(`${steps.length} milestones saved`, 'success');
+    router.replace(`/skills/${skillId}`);
   };
 
   return (

@@ -28,22 +28,31 @@ export async function generateLearningPlan(userPrompt: string): Promise<string[]
     `Goal: ${userPrompt}`,
   ].join('\n');
 
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'x-goog-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      input,
-      response_format: {
-        type: 'text',
-        mime_type: 'application/json',
-        schema: { type: 'array', items: { type: 'string' } },
+  let res: Response;
+  try {
+    res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'x-goog-api-key': apiKey,
+        'Content-Type': 'application/json',
       },
-    }),
-  });
+      body: JSON.stringify({
+        model: MODEL,
+        input,
+        response_format: {
+          type: 'text',
+          mime_type: 'application/json',
+          schema: { type: 'array', items: { type: 'string' } },
+        },
+      }),
+    });
+  } catch {
+    throw new Error('Network error — check your connection and try again.');
+  }
+
+  if (res.status === 429) {
+    throw new Error('Rate limit reached. Please wait a moment and try again.');
+  }
 
   if (!res.ok) {
     const detail = await res.text().catch(() => '');

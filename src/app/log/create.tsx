@@ -2,12 +2,14 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useToast } from '@/components/ui/Toast';
 import { createLog } from '@/db/queries/logs';
 import { LogForm } from '@/features/logs/LogForm';
 import { useSkillsLive } from '@/features/skills/useSkills';
 
 export default function CreateLogScreen() {
   const router = useRouter();
+  const toast = useToast();
   const { skillId } = useLocalSearchParams<{ skillId?: string }>();
   const { data: skills } = useSkillsLive();
 
@@ -31,6 +33,7 @@ export default function CreateLogScreen() {
           submitLabel="Save log"
           onSubmit={async (values) => {
             await createLog(values);
+            toast('Log saved', 'success');
             router.back();
           }}
         />

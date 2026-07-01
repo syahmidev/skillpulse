@@ -1,5 +1,6 @@
 # SkillPulse
 
+[![CI](https://github.com/syahmidev/skillpulse/actions/workflows/ci.yml/badge.svg)](https://github.com/syahmidev/skillpulse/actions/workflows/ci.yml)
 [![Expo SDK 56](https://img.shields.io/badge/Expo-SDK_56-000020?logo=expo&logoColor=white)](https://expo.dev)
 [![React Native](https://img.shields.io/badge/React_Native-0.85-20232A?logo=react&logoColor=61DAFB)](https://reactnative.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -208,6 +209,25 @@ The database and its tables are created automatically on first launch (Drizzle m
 | `bun run ios` / `android` / `web` | Launch on a target platform |
 | `bun run db:generate` | Generate a new Drizzle migration after editing the schema |
 | `bun run lint` | Run ESLint |
+| `bun run test` | Run the unit tests (Jest) |
+
+### Quality checks
+
+Typecheck, lint, and tests run in [CI](.github/workflows/ci.yml) on every push and pull request:
+
+```bash
+bunx tsc --noEmit && bun run lint && bun run test
+```
+
+### Build & deploy (EAS)
+
+Native builds and store submission use [EAS](https://docs.expo.dev/eas/) (profiles in [`eas.json`](./eas.json)):
+
+```bash
+bunx eas build --profile preview --platform ios      # shareable internal build
+bunx eas build --profile production --platform all    # store build
+bunx eas submit --profile production                  # submit to the stores
+```
 
 ---
 
