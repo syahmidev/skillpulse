@@ -3,7 +3,7 @@ import { describe, expect, it } from '@jest/globals';
 import type { LearningLog, Milestone, Skill } from '@/db/schema';
 import { toISODate, todayISODate } from '@/lib/date';
 
-import { computeInsights } from '../compute';
+import { buildHeatmap, computeInsights } from '../compute';
 
 const skill = (over: Partial<Skill> & { id: string; name: string }): Skill => ({
   category: 'mobile',
@@ -102,5 +102,27 @@ describe('computeInsights', () => {
     expect(empty.weekly).toHaveLength(7);
     expect(empty.weeklyMinutes).toBe(0);
     expect(empty.categoryBreakdown).toEqual([]);
+    expect(empty.heatmap).toHaveLength(26);
+  });
+});
+
+describe('buildHeatmap', () => {
+  const today = todayISODate();
+  const grid = buildHeatmap([{ logDate: today, durationMinutes: 90 }], 4);
+
+  it('produces `weeks` columns of 7 days each', () => {
+    expect(grid).toHaveLength(4);
+    grid.forEach((col) => expect(col).toHaveLength(7));
+  });
+
+  it('buckets today into the right intensity level', () => {
+    const cell = grid.flat().find((c) => c.date === today);
+    expect(cell?.minutes).toBe(90);
+    expect(cell?.level).toBe(3); // 61–120 min
+  });
+
+  it('leaves days without logs at level 0', () => {
+    const others = grid.flat().filter((c) => c.date !== today);
+    expect(others.every((c) => c.level === 0 && c.minutes === 0)).toBe(true);
   });
 });

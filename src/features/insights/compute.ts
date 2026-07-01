@@ -15,10 +15,53 @@ export type InsightsData = {
   weeklyMinutes: number;
   weekly: DailyMinutes[];
   categoryBreakdown: { category: SkillCategory; count: number }[];
+  heatmap: HeatCell[][];
   logCount: number;
 };
 
 const DAY_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+export type HeatLevel = 0 | 1 | 2 | 3 | 4;
+export type HeatCell = { date: string; minutes: number; level: HeatLevel };
+
+const heatLevel = (minutes: number): HeatLevel => {
+  if (minutes <= 0) return 0;
+  if (minutes <= 30) return 1;
+  if (minutes <= 60) return 2;
+  if (minutes <= 120) return 3;
+  return 4;
+};
+
+/**
+ * GitHub-style contribution grid: an array of week columns (Mon–Sun), each with
+ * 7 day cells, ending with the current week. Pure so it can be unit-tested.
+ */
+export function buildHeatmap(
+  logRows: Pick<LearningLog, 'logDate' | 'durationMinutes'>[],
+  weeks = 26
+): HeatCell[][] {
+  const minutesByDate = new Map<string, number>();
+  for (const l of logRows) {
+    minutesByDate.set(l.logDate, (minutesByDate.get(l.logDate) ?? 0) + l.durationMinutes);
+  }
+
+  const [y, m, d] = getWeekRange().start.split('-').map(Number);
+  const cursor = new Date(y, (m ?? 1) - 1, d ?? 1);
+  cursor.setDate(cursor.getDate() - (weeks - 1) * 7);
+
+  const columns: HeatCell[][] = [];
+  for (let w = 0; w < weeks; w += 1) {
+    const column: HeatCell[] = [];
+    for (let day = 0; day < 7; day += 1) {
+      const date = toISODate(cursor);
+      const minutes = minutesByDate.get(date) ?? 0;
+      column.push({ date, minutes, level: heatLevel(minutes) });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    columns.push(column);
+  }
+  return columns;
+}
 
 /**
  * Pure dashboard/insights aggregation over the raw table rows. Kept free of
@@ -76,6 +119,7 @@ export function computeInsights(
     weeklyMinutes,
     weekly,
     categoryBreakdown,
+    heatmap: buildHeatmap(logRows),
     logCount: logRows.length,
   };
 }

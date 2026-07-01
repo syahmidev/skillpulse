@@ -1,5 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 
+import { Heatmap } from '@/components/Heatmap';
 import { StatCard } from '@/components/StatCard';
 import { WeeklyChart } from '@/components/WeeklyChart';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -33,6 +34,11 @@ export default function InsightsScreen() {
           </Text>
         </View>
         <WeeklyChart data={stats.weekly} />
+      </View>
+
+      <View className="gap-3 rounded-2xl border border-border bg-card p-5">
+        <SectionHeader title="Activity" />
+        <Heatmap data={stats.heatmap} />
       </View>
 
       <View className="flex-row gap-3">
