@@ -1,0 +1,80 @@
+// Server-side Gemini "Interactions API" call. Runs inside the Expo Router API
+// route (app/api/plan+api.ts) so the API key stays off the client.
+
+const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+const MODEL = 'gemini-3.5-flash';
+const MAX_STEPS = 12;
+
+/** Generate a learning plan as a list of milestone titles. Throws on failure. */
+export async function callGemini(userPrompt: string, apiKey: string): Promise<string[]> {
+  const input = [
+    'You are a learning coach. Create a concise, ordered learning plan for the goal below.',
+    'Return 6 to 12 short, actionable milestone titles (about 8 words or fewer each),',
+    'in the order they should be completed. No numbering, week labels, or commentary —',
+    'just the milestone titles.',
+    '',
+    `Goal: ${userPrompt}`,
+  ].join('\n');
+
+  const res = await fetch(ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'x-goog-api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      input,
+      response_format: {
+        type: 'text',
+        mime_type: 'application/json',
+        schema: { type: 'array', items: { type: 'string' } },
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`Gemini request failed (${res.status}). ${detail.slice(0, 200)}`.trim());
+  }
+
+  const data = (await res.json()) as InteractionResponse;
+  const text = extractText(data);
+  if (!text) throw new Error('Gemini returned no content.');
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error('Could not parse the AI response.');
+  }
+  if (!Array.isArray(parsed)) throw new Error('Unexpected AI response format.');
+
+  return parsed
+    .map((step) => String(step).trim())
+    .filter((step) => step.length > 0)
+    .slice(0, MAX_STEPS);
+}
+
+type Content = { type?: string; text?: string };
+type Step = { type?: string; content?: Content[] };
+type InteractionResponse = { output_text?: string; steps?: Step[] };
+
+/**
+ * The Interactions API nests output at `steps[].content[].text` (in the
+ * `model_output` step). Prefer that step, fall back to any text content, then
+ * to a flat `output_text` for forward-compatibility.
+ */
+function extractText(data: InteractionResponse): string | undefined {
+  const steps = data.steps ?? [];
+
+  const collect = (filterModelOutput: boolean): string =>
+    steps
+      .filter((s) => (filterModelOutput ? s.type === 'model_output' : true))
+      .flatMap((s) => s.content ?? [])
+      .map((c) => c.text ?? '')
+      .join('')
+      .trim();
+
+  return collect(true) || collect(false) || data.output_text?.trim() || undefined;
+}

@@ -144,20 +144,17 @@ erDiagram
 
 ## API Endpoints
 
-SkillPulse has **no custom backend** — all persistence is local SQLite, accessed
-through typed Drizzle query functions in `src/db/queries/` (not network endpoints).
-
-The only external call is to the **Google Gemini API** for the AI learning plan
-(`src/lib/ai.ts`):
+All app data is local SQLite (no backend), accessed through typed Drizzle query
+functions in `src/db/queries/`. The one server piece is an **Expo Router API route**
+that proxies the AI call so the Gemini key stays off the client.
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `POST` | `https://generativelanguage.googleapis.com/v1beta/interactions` | Generate a learning plan |
+| `POST` | `/api/plan` | Generate a learning plan (server-side proxy) |
 
-- **Auth:** `x-goog-api-key` header (`EXPO_PUBLIC_GEMINI_API_KEY`)
-- **Model:** `gemini-3.5-flash`
-- **Request:** a free-text goal with `response_format` requesting a JSON array of strings (structured output)
-- **Response:** the plan text is read from `steps[].content[].text` of the returned interaction, then parsed into milestone titles
+- **Server route:** `src/app/api/plan+api.ts` reads the **server-only** `GEMINI_API_KEY` and calls Gemini (`gemini-3.5-flash`, Interactions API) via `src/lib/gemini.ts`.
+- **Client:** `src/lib/ai.ts` POSTs `{ prompt }` to `/api/plan` and receives `{ steps }`. In development it targets the Expo dev server; in production set `EXPO_PUBLIC_API_URL` to the deployed origin (e.g. EAS Hosting).
+- **Why:** the key is never bundled into the app (no `EXPO_PUBLIC_` on it), unlike a direct client call.
 
 ---
 
@@ -186,10 +183,10 @@ cp .env.example .env
 ```
 
 ```env
-EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-> `.env` is gitignored. The key is bundled into the client (`EXPO_PUBLIC_`), which is fine for a local/demo build but not for production. Everything except the AI screen works without a key.
+> `.env` is gitignored. `GEMINI_API_KEY` has **no** `EXPO_PUBLIC_` prefix — it's read only by the server API route (`app/api/plan+api.ts`), so it never ships in the app bundle. Everything except the AI screen works without a key.
 
 ### Run
 
