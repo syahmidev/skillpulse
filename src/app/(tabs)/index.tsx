@@ -80,7 +80,12 @@ export default function HomeScreen() {
       </Pressable>
 
       <View className="gap-3">
-        <Button label="Add learning log" onPress={() => router.push('/log/create')} />
+        <Button label="Start focus session" onPress={() => router.push('/focus')} />
+        <Button
+          label="Add learning log"
+          variant="secondary"
+          onPress={() => router.push('/log/create')}
+        />
         <Button
           label="Add skill"
           variant="secondary"

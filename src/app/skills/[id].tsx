@@ -115,6 +115,13 @@ export default function SkillDetailScreen() {
           </View>
         </View>
 
+        <Button
+          label="Start focus session"
+          onPress={() =>
+            router.push({ pathname: '/focus', params: { skillId: skill.id } })
+          }
+        />
+
         <View className="gap-3 rounded-2xl border border-border bg-card p-5">
           <SectionHeader title="Milestones" />
           {milestones.length > 0 ? (
