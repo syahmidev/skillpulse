@@ -23,7 +23,7 @@ export default function SkillsScreen() {
   const visible = filter === 'all' ? skills : skills.filter((s) => s.category === filter);
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-background">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -36,10 +36,10 @@ export default function SkillsScreen() {
               key={f.value}
               onPress={() => setFilter(f.value)}
               className={`rounded-full border px-3.5 py-2 ${
-                selected ? 'border-brand bg-brand' : 'border-slate-200 bg-white'
+                selected ? 'border-brand bg-brand' : 'border-border bg-card'
               }`}>
               <Text
-                className={`text-sm font-medium ${selected ? 'text-white' : 'text-slate-600'}`}>
+                className={`text-sm font-medium ${selected ? 'text-white' : 'text-muted'}`}>
                 {f.label}
               </Text>
             </Pressable>

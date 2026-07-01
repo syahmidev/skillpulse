@@ -30,7 +30,7 @@ export default function LogScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-50">
+    <View className="flex-1 bg-background">
       <View className="mx-5 mt-5 rounded-2xl bg-brand p-5">
         <Text className="text-xs font-medium text-indigo-100">Total learning time</Text>
         <Text className="text-3xl font-bold text-white">{formatHours(totalMinutes)}</Text>
@@ -52,11 +52,11 @@ export default function LogScreen() {
                 key={s.id}
                 onPress={() => setSkillFilter(s.id)}
                 className={`rounded-full border px-3.5 py-2 ${
-                  selected ? 'border-brand bg-brand' : 'border-slate-200 bg-white'
+                  selected ? 'border-brand bg-brand' : 'border-border bg-card'
                 }`}>
                 <Text
                   className={`text-sm font-medium ${
-                    selected ? 'text-white' : 'text-slate-600'
+                    selected ? 'text-white' : 'text-muted'
                   }`}>
                   {s.name}
                 </Text>

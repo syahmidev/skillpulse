@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Semantic theme tokens (space-separated RGB for <alpha-value> support).
+ * The dark override uses prefers-color-scheme, which NativeWind evaluates
+ * against its own scheme — so it also follows a manual colorScheme.set().
+ * Keep these values in sync with src/theme/palette.ts (used for imperative
+ * colors like icons and navigation chrome).
+ */
+@layer base {
+  :root {
+    --color-background: 248 250 252;
+    --color-card: 255 255 255;
+    --color-surface-muted: 241 245 249;
+    --color-border: 226 232 240;
+    --color-foreground: 15 23 42;
+    --color-muted: 100 116 139;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background: 2 6 23;
+      --color-card: 15 23 42;
+      --color-surface-muted: 30 41 59;
+      --color-border: 30 41 59;
+      --color-foreground: 241 245 249;
+      --color-muted: 148 163 184;
+    }
+  }
+}
+
 :root {
   --font-display:
     Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,

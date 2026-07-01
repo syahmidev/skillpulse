@@ -15,7 +15,7 @@ export default function CreateLogScreen() {
     <>
       <Stack.Screen options={{ title: 'New Log' }} />
       {skills.length === 0 ? (
-        <View className="flex-1 bg-slate-50">
+        <View className="flex-1 bg-background">
           <EmptyState
             icon="library-outline"
             title="No skills yet"

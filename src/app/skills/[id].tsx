@@ -23,10 +23,12 @@ import { useMilestonesBySkillLive } from '@/features/milestones/useMilestones';
 import { useLogsBySkillLive } from '@/features/logs/useLogs';
 import { useSkillLive } from '@/features/skills/useSkills';
 import { formatHours } from '@/lib/format';
+import { useTheme } from '@/theme/useTheme';
 
 export default function SkillDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const theme = useTheme();
   const { data } = useSkillLive(id);
   const { data: logs } = useLogsBySkillLive(id);
   const { data: milestones } = useMilestonesBySkillLive(id);
@@ -45,8 +47,8 @@ export default function SkillDetailScreen() {
 
   if (!skill) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50">
-        <Text className="text-slate-500">Skill not found.</Text>
+      <View className="flex-1 items-center justify-center bg-background">
+        <Text className="text-muted">Skill not found.</Text>
       </View>
     );
   }
@@ -72,9 +74,9 @@ export default function SkillDetailScreen() {
   return (
     <>
       <Stack.Screen options={{ title: skill.name }} />
-      <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-5 p-5">
-        <View className="gap-3 rounded-2xl border border-slate-100 bg-white p-5">
-          <Text className="text-xl font-bold text-slate-900">{skill.name}</Text>
+      <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5">
+        <View className="gap-3 rounded-2xl border border-border bg-card p-5">
+          <Text className="text-xl font-bold text-foreground">{skill.name}</Text>
 
           <View className="flex-row flex-wrap gap-2">
             <Badge label={CATEGORY_LABELS[skill.category]} tone={CATEGORY_TONES[skill.category]} />
@@ -82,43 +84,43 @@ export default function SkillDetailScreen() {
           </View>
 
           <View className="flex-row items-center gap-2">
-            <Text className="text-sm text-slate-500">Level</Text>
-            <Text className="text-sm font-medium text-slate-700">
+            <Text className="text-sm text-muted">Level</Text>
+            <Text className="text-sm font-medium text-foreground">
               {LEVEL_LABELS[skill.currentLevel]}
             </Text>
-            <Ionicons name="arrow-forward" size={14} color="#94a3b8" />
-            <Text className="text-sm font-medium text-slate-700">
+            <Ionicons name="arrow-forward" size={14} color={theme.muted} />
+            <Text className="text-sm font-medium text-foreground">
               {LEVEL_LABELS[skill.targetLevel]}
             </Text>
           </View>
 
           {skill.goal ? (
             <View className="gap-1">
-              <Text className="text-sm text-slate-500">Goal</Text>
-              <Text className="text-sm text-slate-800">{skill.goal}</Text>
+              <Text className="text-sm text-muted">Goal</Text>
+              <Text className="text-sm text-foreground">{skill.goal}</Text>
             </View>
           ) : null}
         </View>
 
         <View className="flex-row gap-3">
-          <View className="flex-1 rounded-2xl border border-slate-100 bg-white p-4">
-            <Text className="text-2xl font-bold text-slate-900">{formatHours(totalMinutes)}</Text>
-            <Text className="text-xs text-slate-500">Total time</Text>
+          <View className="flex-1 rounded-2xl border border-border bg-card p-4">
+            <Text className="text-2xl font-bold text-foreground">{formatHours(totalMinutes)}</Text>
+            <Text className="text-xs text-muted">Total time</Text>
           </View>
-          <View className="flex-1 rounded-2xl border border-slate-100 bg-white p-4">
-            <Text className="text-2xl font-bold text-slate-900">{logs.length}</Text>
-            <Text className="text-xs text-slate-500">
+          <View className="flex-1 rounded-2xl border border-border bg-card p-4">
+            <Text className="text-2xl font-bold text-foreground">{logs.length}</Text>
+            <Text className="text-xs text-muted">
               Log{logs.length === 1 ? '' : 's'}
             </Text>
           </View>
         </View>
 
-        <View className="gap-3 rounded-2xl border border-slate-100 bg-white p-5">
+        <View className="gap-3 rounded-2xl border border-border bg-card p-5">
           <SectionHeader title="Milestones" />
           {milestones.length > 0 ? (
             <View className="gap-2">
               <View className="flex-row items-center justify-between">
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-muted">
                   {completedCount}/{milestones.length} completed
                 </Text>
                 <Text className="text-xs font-semibold text-brand">
@@ -130,7 +132,7 @@ export default function SkillDetailScreen() {
           ) : null}
 
           {milestones.length === 0 ? (
-            <Text className="text-sm text-slate-500">
+            <Text className="text-sm text-muted">
               No milestones yet — break your goal into small steps.
             </Text>
           ) : (
@@ -164,8 +166,8 @@ export default function SkillDetailScreen() {
             }
           />
           {logs.length === 0 ? (
-            <View className="rounded-2xl border border-slate-100 bg-white p-5">
-              <Text className="text-sm text-slate-500">
+            <View className="rounded-2xl border border-border bg-card p-5">
+              <Text className="text-sm text-muted">
                 No logs yet — add your first learning session for this skill.
               </Text>
             </View>

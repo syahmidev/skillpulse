@@ -8,7 +8,7 @@ type SectionHeaderProps = {
 export function SectionHeader({ title, action }: SectionHeaderProps) {
   return (
     <View className="flex-row items-center justify-between">
-      <Text className="text-base font-semibold text-slate-900">{title}</Text>
+      <Text className="text-base font-semibold text-foreground">{title}</Text>
       {action}
     </View>
   );

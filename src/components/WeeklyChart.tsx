@@ -16,7 +16,7 @@ export function WeeklyChart({ data }: { data: DailyMinutes[] }) {
             <View key={i} className="flex-1 items-center justify-end">
               <View
                 style={{ height }}
-                className={`w-6 rounded-t-md ${d.minutes > 0 ? 'bg-brand' : 'bg-slate-200'}`}
+                className={`w-6 rounded-t-md ${d.minutes > 0 ? 'bg-brand' : 'bg-surface-muted'}`}
               />
             </View>
           );
@@ -24,7 +24,7 @@ export function WeeklyChart({ data }: { data: DailyMinutes[] }) {
       </View>
       <View className="flex-row justify-between">
         {data.map((d, i) => (
-          <Text key={i} className="flex-1 text-center text-xs text-slate-400">
+          <Text key={i} className="flex-1 text-center text-xs text-muted">
             {d.label}
           </Text>
         ))}

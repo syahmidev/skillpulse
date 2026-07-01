@@ -6,16 +6,18 @@ import { StatCard } from '@/components/StatCard';
 import { Button } from '@/components/ui/Button';
 import { useInsights } from '@/features/insights/useInsights';
 import { formatHours } from '@/lib/format';
+import { useTheme } from '@/theme/useTheme';
 
 export default function HomeScreen() {
   const router = useRouter();
   const stats = useInsights();
+  const theme = useTheme();
 
   return (
-    <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-5 p-5">
+    <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-slate-900">Welcome back 👋</Text>
-        <Text className="text-sm text-slate-500">Here&apos;s your learning at a glance.</Text>
+        <Text className="text-2xl font-bold text-foreground">Welcome back 👋</Text>
+        <Text className="text-sm text-muted">Here&apos;s your learning at a glance.</Text>
       </View>
 
       <View className="flex-row items-center gap-4 rounded-2xl bg-brand p-5">
@@ -56,9 +58,9 @@ export default function HomeScreen() {
       </View>
 
       {stats.mostPracticedSkill ? (
-        <View className="rounded-2xl border border-slate-100 bg-white p-4">
-          <Text className="text-xs text-slate-500">Most practiced skill</Text>
-          <Text className="text-lg font-semibold text-slate-900">
+        <View className="rounded-2xl border border-border bg-card p-4">
+          <Text className="text-xs text-muted">Most practiced skill</Text>
+          <Text className="text-lg font-semibold text-foreground">
             {stats.mostPracticedSkill}
           </Text>
         </View>
@@ -66,15 +68,15 @@ export default function HomeScreen() {
 
       <Pressable
         onPress={() => router.push('/ai-plan')}
-        className="flex-row items-center gap-3 rounded-2xl border border-indigo-100 bg-indigo-50 p-4 active:bg-indigo-100">
+        className="flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:bg-surface-muted">
         <View className="h-10 w-10 items-center justify-center rounded-full bg-brand">
           <Ionicons name="sparkles" size={20} color="#ffffff" />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold text-slate-900">AI learning plan</Text>
-          <Text className="text-xs text-slate-500">Generate milestones with Gemini</Text>
+          <Text className="text-base font-semibold text-foreground">AI learning plan</Text>
+          <Text className="text-xs text-muted">Generate milestones with Gemini</Text>
         </View>
-        <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
+        <Ionicons name="chevron-forward" size={20} color={theme.muted} />
       </Pressable>
 
       <View className="gap-3">

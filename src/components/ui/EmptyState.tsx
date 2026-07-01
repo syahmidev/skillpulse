@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
+import { useTheme } from '@/theme/useTheme';
+
 import { Button } from './Button';
 
 type EmptyStateProps = {
@@ -18,13 +20,14 @@ export function EmptyState({
   actionLabel,
   onAction,
 }: EmptyStateProps) {
+  const theme = useTheme();
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8">
-      <View className="h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-        <Ionicons name={icon} size={28} color="#6366f1" />
+      <View className="h-16 w-16 items-center justify-center rounded-full bg-surface-muted">
+        <Ionicons name={icon} size={28} color={theme.brand} />
       </View>
-      <Text className="text-center text-lg font-semibold text-slate-900">{title}</Text>
-      <Text className="text-center text-sm text-slate-500">{message}</Text>
+      <Text className="text-center text-lg font-semibold text-foreground">{title}</Text>
+      <Text className="text-center text-sm text-muted">{message}</Text>
       {actionLabel && onAction ? (
         <View className="mt-2 w-full max-w-xs">
           <Button label={actionLabel} onPress={onAction} />

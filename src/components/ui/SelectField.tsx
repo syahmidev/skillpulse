@@ -19,7 +19,7 @@ export function SelectField<T extends string>({
 }: SelectFieldProps<T>) {
   return (
     <View className="gap-1.5">
-      <Text className="text-sm font-medium text-slate-700">{label}</Text>
+      <Text className="text-sm font-medium text-muted">{label}</Text>
       <View className="flex-row flex-wrap gap-2">
         {options.map((option) => {
           const selected = option.value === value;
@@ -28,11 +28,11 @@ export function SelectField<T extends string>({
               key={option.value}
               onPress={() => onChange(option.value)}
               className={`rounded-full border px-3.5 py-2 ${
-                selected ? 'border-brand bg-brand' : 'border-slate-200 bg-white'
+                selected ? 'border-brand bg-brand' : 'border-border bg-card'
               }`}>
               <Text
                 className={`text-sm font-medium ${
-                  selected ? 'text-white' : 'text-slate-600'
+                  selected ? 'text-white' : 'text-muted'
                 }`}>
                 {option.label}
               </Text>
@@ -40,7 +40,7 @@ export function SelectField<T extends string>({
           );
         })}
       </View>
-      {error ? <Text className="text-xs text-rose-600">{error}</Text> : null}
+      {error ? <Text className="text-xs text-danger">{error}</Text> : null}
     </View>
   );
 }

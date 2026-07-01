@@ -51,7 +51,7 @@ export function LogForm({ skills, defaultSkillId, submitLabel, onSubmit }: LogFo
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50"
+      className="flex-1 bg-background"
       contentContainerClassName="gap-5 p-5 pb-10"
       keyboardShouldPersistTaps="handled">
       <Controller

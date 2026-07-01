@@ -8,14 +8,20 @@ import '../global.css';
 
 import { db } from '@/db/client';
 import migrations from '@/db/migrations/migrations';
+// Instantiate the theme store early so the persisted preference rehydrates on launch.
+import { useThemeStore } from '@/stores/useThemeStore';
+import { useScheme, useTheme } from '@/theme/useTheme';
 
 export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations);
+  const theme = useTheme();
+  const scheme = useScheme();
+  useThemeStore((s) => s.preference);
 
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50 p-6">
-        <Text className="text-center text-rose-600">
+      <View className="flex-1 items-center justify-center bg-background p-6">
+        <Text className="text-center text-danger">
           Database migration failed: {error.message}
         </Text>
       </View>
@@ -24,23 +30,23 @@ export default function RootLayout() {
 
   if (!success) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50">
-        <ActivityIndicator color="#6366f1" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator color={theme.brand} />
       </View>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
           headerShadowVisible: false,
-          headerStyle: { backgroundColor: '#f8fafc' },
-          headerTitleStyle: { color: '#0f172a', fontWeight: '700' },
-          headerTintColor: '#6366f1',
+          headerStyle: { backgroundColor: theme.background },
+          headerTitleStyle: { color: theme.foreground, fontWeight: '700' },
+          headerTintColor: theme.brand,
           headerBackButtonDisplayMode: 'minimal',
-          contentStyle: { backgroundColor: '#f8fafc' },
+          contentStyle: { backgroundColor: theme.background },
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>

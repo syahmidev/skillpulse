@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 
 import { formatDisplayDate, toISODate } from '@/lib/date';
+import { useTheme } from '@/theme/useTheme';
 
 type DateFieldProps = {
   label: string;
@@ -21,6 +22,7 @@ function parseISODate(value: string): Date {
 
 export function DateField({ label, value, onChange, error }: DateFieldProps) {
   const [show, setShow] = useState(false);
+  const theme = useTheme();
 
   const handleChange = (event: DateTimePickerEvent, selected?: Date) => {
     if (Platform.OS !== 'ios') setShow(false);
@@ -29,14 +31,14 @@ export function DateField({ label, value, onChange, error }: DateFieldProps) {
 
   return (
     <View className="gap-1.5">
-      <Text className="text-sm font-medium text-slate-700">{label}</Text>
+      <Text className="text-sm font-medium text-muted">{label}</Text>
       <Pressable
         onPress={() => setShow((s) => !s)}
-        className={`flex-row items-center justify-between rounded-xl border bg-white px-3.5 py-3 ${
-          error ? 'border-rose-400' : 'border-slate-200'
+        className={`flex-row items-center justify-between rounded-xl border bg-card px-3.5 py-3 ${
+          error ? 'border-danger' : 'border-border'
         }`}>
-        <Text className="text-base text-slate-900">{formatDisplayDate(value)}</Text>
-        <Ionicons name="calendar-outline" size={18} color="#64748b" />
+        <Text className="text-base text-foreground">{formatDisplayDate(value)}</Text>
+        <Ionicons name="calendar-outline" size={18} color={theme.muted} />
       </Pressable>
       {show ? (
         <DateTimePicker
@@ -47,7 +49,7 @@ export function DateField({ label, value, onChange, error }: DateFieldProps) {
           onChange={handleChange}
         />
       ) : null}
-      {error ? <Text className="text-xs text-rose-600">{error}</Text> : null}
+      {error ? <Text className="text-xs text-danger">{error}</Text> : null}
     </View>
   );
 }

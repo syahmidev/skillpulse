@@ -13,7 +13,7 @@ export default function InsightsScreen() {
 
   if (stats.logCount === 0) {
     return (
-      <View className="flex-1 bg-slate-50">
+      <View className="flex-1 bg-background">
         <EmptyState
           icon="stats-chart-outline"
           title="No insights yet"
@@ -24,10 +24,10 @@ export default function InsightsScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-5 p-5">
-      <View className="gap-3 rounded-2xl border border-slate-100 bg-white p-5">
+    <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5">
+      <View className="gap-3 rounded-2xl border border-border bg-card p-5">
         <View className="flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-slate-900">This week</Text>
+          <Text className="text-base font-semibold text-foreground">This week</Text>
           <Text className="text-sm font-semibold text-brand">
             {formatHours(stats.weeklyMinutes)}
           </Text>
@@ -57,22 +57,22 @@ export default function InsightsScreen() {
       </View>
 
       {stats.mostPracticedSkill ? (
-        <View className="rounded-2xl border border-slate-100 bg-white p-4">
-          <Text className="text-xs text-slate-500">Most practiced skill</Text>
-          <Text className="text-lg font-semibold text-slate-900">
+        <View className="rounded-2xl border border-border bg-card p-4">
+          <Text className="text-xs text-muted">Most practiced skill</Text>
+          <Text className="text-lg font-semibold text-foreground">
             {stats.mostPracticedSkill}
           </Text>
         </View>
       ) : null}
 
       {stats.categoryBreakdown.length > 0 ? (
-        <View className="gap-3 rounded-2xl border border-slate-100 bg-white p-5">
+        <View className="gap-3 rounded-2xl border border-border bg-card p-5">
           <SectionHeader title="Skills by category" />
           <View className="gap-2">
             {stats.categoryBreakdown.map((c) => (
               <View key={c.category} className="flex-row items-center justify-between">
-                <Text className="text-sm text-slate-600">{CATEGORY_LABELS[c.category]}</Text>
-                <Text className="text-sm font-semibold text-slate-900">{c.count}</Text>
+                <Text className="text-sm text-muted">{CATEGORY_LABELS[c.category]}</Text>
+                <Text className="text-sm font-semibold text-foreground">{c.count}</Text>
               </View>
             ))}
           </View>

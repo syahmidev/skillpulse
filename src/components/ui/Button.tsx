@@ -12,16 +12,16 @@ type ButtonProps = {
 
 const CONTAINER: Record<ButtonVariant, string> = {
   primary: 'bg-brand active:bg-brand-dark',
-  secondary: 'bg-slate-100 active:bg-slate-200',
-  danger: 'bg-rose-50 active:bg-rose-100',
-  ghost: 'bg-transparent active:bg-slate-100',
+  secondary: 'bg-surface-muted active:bg-border',
+  danger: 'border border-danger bg-transparent active:bg-surface-muted',
+  ghost: 'bg-transparent active:bg-surface-muted',
 };
 
 const LABEL: Record<ButtonVariant, string> = {
   primary: 'text-white',
-  secondary: 'text-slate-900',
-  danger: 'text-rose-600',
-  ghost: 'text-slate-700',
+  secondary: 'text-foreground',
+  danger: 'text-danger',
+  ghost: 'text-muted',
 };
 
 export function Button({

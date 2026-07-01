@@ -60,7 +60,7 @@ export default function AiPlanScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'AI Learning Plan' }} />
-      <ScrollView className="flex-1 bg-slate-50" contentContainerClassName="gap-5 p-5 pb-10">
+      <ScrollView className="flex-1 bg-background" contentContainerClassName="gap-5 p-5 pb-10">
         <View className="flex-row items-center gap-3 rounded-2xl bg-brand p-4">
           <Ionicons name="sparkles" size={22} color="#ffffff" />
           <Text className="flex-1 text-sm text-indigo-50">
@@ -82,26 +82,26 @@ export default function AiPlanScreen() {
         <Button label="Generate plan" onPress={generate} loading={loading} />
 
         {error ? (
-          <View className="rounded-xl border border-rose-200 bg-rose-50 p-3">
-            <Text className="text-sm text-rose-700">{error}</Text>
+          <View className="rounded-xl border border-danger bg-card p-3">
+            <Text className="text-sm text-danger">{error}</Text>
           </View>
         ) : null}
 
         {steps ? (
           <View className="gap-4">
-            <View className="gap-2 rounded-2xl border border-slate-100 bg-white p-5">
-              <Text className="text-base font-semibold text-slate-900">Suggested milestones</Text>
+            <View className="gap-2 rounded-2xl border border-border bg-card p-5">
+              <Text className="text-base font-semibold text-foreground">Suggested milestones</Text>
               {steps.map((step, i) => (
                 <View key={i} className="flex-row gap-2">
                   <Text className="text-sm font-semibold text-brand">{i + 1}.</Text>
-                  <Text className="flex-1 text-sm text-slate-700">{step}</Text>
+                  <Text className="flex-1 text-sm text-foreground">{step}</Text>
                 </View>
               ))}
             </View>
 
             {skills.length === 0 ? (
-              <View className="rounded-2xl border border-slate-100 bg-white p-4">
-                <Text className="text-sm text-slate-500">
+              <View className="rounded-2xl border border-border bg-card p-4">
+                <Text className="text-sm text-muted">
                   Create a skill first to save these as milestones.
                 </Text>
               </View>
