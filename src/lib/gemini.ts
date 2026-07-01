@@ -1,36 +1,18 @@
-// Server-side Gemini "Interactions API" call. Runs inside the Expo Router API
-// route (app/api/plan+api.ts) so the API key stays off the client.
+// Server-side Gemini "Interactions API" calls. Used by the Expo Router API
+// routes (app/api/*) so the API key stays off the client.
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 const MODEL = 'gemini-3.5-flash';
-const MAX_STEPS = 12;
 
-/** Generate a learning plan as a list of milestone titles. Throws on failure. */
-export async function callGemini(userPrompt: string, apiKey: string): Promise<string[]> {
-  const input = [
-    'You are a learning coach. Create a concise, ordered learning plan for the goal below.',
-    'Return 6 to 12 short, actionable milestone titles (about 8 words or fewer each),',
-    'in the order they should be completed. No numbering, week labels, or commentary —',
-    'just the milestone titles.',
-    '',
-    `Goal: ${userPrompt}`,
-  ].join('\n');
+type Content = { type?: string; text?: string };
+type Step = { type?: string; content?: Content[] };
+type InteractionResponse = { output_text?: string; steps?: Step[] };
 
+async function request(apiKey: string, body: Record<string, unknown>): Promise<string> {
   const res = await fetch(ENDPOINT, {
     method: 'POST',
-    headers: {
-      'x-goog-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      input,
-      response_format: {
-        type: 'text',
-        mime_type: 'application/json',
-        schema: { type: 'array', items: { type: 'string' } },
-      },
-    }),
+    headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, ...body }),
   });
 
   if (!res.ok) {
@@ -41,6 +23,28 @@ export async function callGemini(userPrompt: string, apiKey: string): Promise<st
   const data = (await res.json()) as InteractionResponse;
   const text = extractText(data);
   if (!text) throw new Error('Gemini returned no content.');
+  return text;
+}
+
+/** Free-text completion. */
+export async function geminiText(input: string, apiKey: string): Promise<string> {
+  return (await request(apiKey, { input })).trim();
+}
+
+/** Structured completion returning an array of short strings. */
+export async function geminiList(
+  input: string,
+  apiKey: string,
+  max = 12
+): Promise<string[]> {
+  const text = await request(apiKey, {
+    input,
+    response_format: {
+      type: 'text',
+      mime_type: 'application/json',
+      schema: { type: 'array', items: { type: 'string' } },
+    },
+  });
 
   let parsed: unknown;
   try {
@@ -51,14 +55,10 @@ export async function callGemini(userPrompt: string, apiKey: string): Promise<st
   if (!Array.isArray(parsed)) throw new Error('Unexpected AI response format.');
 
   return parsed
-    .map((step) => String(step).trim())
-    .filter((step) => step.length > 0)
-    .slice(0, MAX_STEPS);
+    .map((item) => String(item).trim())
+    .filter((item) => item.length > 0)
+    .slice(0, max);
 }
-
-type Content = { type?: string; text?: string };
-type Step = { type?: string; content?: Content[] };
-type InteractionResponse = { output_text?: string; steps?: Step[] };
 
 /**
  * The Interactions API nests output at `steps[].content[].text` (in the

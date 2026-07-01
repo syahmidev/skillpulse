@@ -1,4 +1,14 @@
-import { callGemini } from '@/lib/gemini';
+import { geminiList } from '@/lib/gemini';
+
+const planPrompt = (goal: string) =>
+  [
+    'You are a learning coach. Create a concise, ordered learning plan for the goal below.',
+    'Return 6 to 12 short, actionable milestone titles (about 8 words or fewer each),',
+    'in the order they should be completed. No numbering, week labels, or commentary —',
+    'just the milestone titles.',
+    '',
+    `Goal: ${goal}`,
+  ].join('\n');
 
 // POST /api/plan — server-side proxy so the Gemini key never ships to the client.
 export async function POST(request: Request): Promise<Response> {
@@ -20,7 +30,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const steps = await callGemini(prompt.trim(), apiKey);
+    const steps = await geminiList(planPrompt(prompt.trim()), apiKey);
     return Response.json({ steps });
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Failed to generate a plan.';

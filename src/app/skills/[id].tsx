@@ -19,6 +19,7 @@ import { deleteLog } from '@/db/queries/logs';
 import { deleteMilestone, setMilestoneCompleted } from '@/db/queries/milestones';
 import { deleteSkill } from '@/db/queries/skills';
 import { AddMilestone } from '@/features/milestones/AddMilestone';
+import { SuggestMilestones } from '@/features/milestones/SuggestMilestones';
 import { useMilestonesBySkillLive } from '@/features/milestones/useMilestones';
 import { useLogsBySkillLive } from '@/features/logs/useLogs';
 import { useSkillLive } from '@/features/skills/useSkills';
@@ -157,6 +158,12 @@ export default function SkillDetailScreen() {
           )}
 
           <AddMilestone skillId={skill.id} />
+          <SuggestMilestones
+            skillId={skill.id}
+            skillName={skill.name}
+            goal={skill.goal ?? undefined}
+            existing={milestones.map((m) => m.title)}
+          />
         </View>
 
         <View className="gap-3">

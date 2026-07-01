@@ -6,8 +6,10 @@ import { WeeklyChart } from '@/components/WeeklyChart';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { CATEGORY_LABELS } from '@/constants/options';
+import { CoachCard } from '@/features/insights/CoachCard';
 import { useInsights } from '@/features/insights/useInsights';
 import { formatHours } from '@/lib/format';
+import { minutesToHours } from '@/lib/date';
 
 export default function InsightsScreen() {
   const stats = useInsights();
@@ -35,6 +37,17 @@ export default function InsightsScreen() {
         </View>
         <WeeklyChart data={stats.weekly} />
       </View>
+
+      <CoachCard
+        stats={{
+          currentStreak: stats.currentStreak,
+          totalHours: minutesToHours(stats.totalLearningMinutes),
+          weekHours: minutesToHours(stats.weeklyMinutes),
+          activeSkills: stats.activeSkills,
+          completedMilestones: stats.completedMilestones,
+          mostPracticedSkill: stats.mostPracticedSkill,
+        }}
+      />
 
       <View className="gap-3 rounded-2xl border border-border bg-card p-5">
         <SectionHeader title="Activity" />
